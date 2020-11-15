@@ -8,13 +8,22 @@ import venusian
 from .settings import extract_celery_settings
 
 
+# If set, pyramid_tasks will use this Celery application rather than make a new
+# one.  This is necessary because when running a worker via an ini file (see
+# celery.py), we need to create the app immediately but have no way of passing
+# in the app when loading the app.
+global_app = None
+
+
 def includeme(config):
     settings = config.get_settings()
-    app = celery.Celery(
-        settings["tasks.name"],
-        autofinalize=False,
-        set_as_current=False,
-    )
+    if global_app is None:
+        app = celery.Celery(
+            autofinalize=False,
+            set_as_current=False,
+        )
+    else:
+        app = global_app
     app.conf.update(extract_celery_settings(settings))
     app.pyramid_config = config
     config.registry["pyramid_tasks.app"] = app
@@ -29,6 +38,7 @@ def includeme(config):
 
 
 def _get_celery_app(config):
+    config.commit()
     return config.registry["pyramid_tasks.app"]
 
 
