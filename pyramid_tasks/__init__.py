@@ -5,6 +5,8 @@ import celery
 import pyramid
 import venusian
 
+from .settings import extract_celery_settings
+
 
 def includeme(config):
     settings = config.get_settings()
@@ -13,6 +15,7 @@ def includeme(config):
         autofinalize=False,
         set_as_current=False,
     )
+    app.conf.update(extract_celery_settings(settings))
     app.pyramid_config = config
     config.registry["pyramid_tasks.app"] = app
     config.registry["pyramid_tasks.task_map"] = dict()

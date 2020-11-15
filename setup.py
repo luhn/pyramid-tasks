@@ -1,12 +1,7 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
-VERSION = '0.1.0',
-REQUIRES = [
-    'pyramid>=1.9,<2',
-    'celery>=4,<5',
-    'venusian',
-]
+VERSION = '0.1.0'
 CLASSIFIERS = [
     'Programming Language :: Python :: 3',
     'License :: OSI Approved :: MIT License',
@@ -14,6 +9,16 @@ CLASSIFIERS = [
     'Framework :: Pyramid',
     'Development Status :: 4 - Beta',
 ]
+
+
+REQUIRES = [
+    'pyramid>=1.9,<2',
+    'celery>=4,<5',
+    'venusian',
+]
+EXTRAS_REQUIRE = {
+    'testing': ['pytest>=6,<7'],
+}
 
 
 with open("README.md", "r") as fh:
@@ -30,7 +35,8 @@ setup(
     author='Theron Luhn',
     author_email='theron@luhn.com',
     classifiers=CLASSIFIERS,
-    py_modules=['pyramid_tasks'],
+    packages=find_packages(),
     python_requires='>=3.6',
     install_requires=REQUIRES,
+    extras_require=EXTRAS_REQUIRE,
 )
