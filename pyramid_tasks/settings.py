@@ -1,6 +1,5 @@
 from pyramid.settings import asbool
 
-
 BOOL_SETTINGS = [
     "broker_connection_retry",
     "broker_use_ssl",

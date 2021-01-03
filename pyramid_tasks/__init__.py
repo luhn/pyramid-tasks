@@ -2,11 +2,10 @@ import functools
 from contextlib import contextmanager
 
 import celery
-import pyramid
 import venusian
+from pyramid.scripting import prepare
 
 from .settings import extract_celery_settings
-
 
 # If set, pyramid_tasks will use this Celery application rather than make a new
 # one.  This is necessary because when running a worker via an ini file (see
@@ -28,16 +27,17 @@ def includeme(config):
     app.pyramid_config = config
     config.registry["pyramid_tasks.app"] = app
     config.registry["pyramid_tasks.task_map"] = dict()
-    config.add_directive("make_celery_app", _get_celery_app)
+    config.add_directive("make_celery_app", _make_celery_app)
     config.add_directive("register_task", register_task)
     config.action(
         ("celery", "finalize"),
         config.registry["pyramid_tasks.app"].finalize,
     )
-    config.add_request_method(delay)
+    config.add_request_method(delay_task)
+    config.add_request_method(get_task_result)
 
 
-def _get_celery_app(config):
+def _make_celery_app(config):
     config.commit()
     return config.registry["pyramid_tasks.app"]
 
@@ -48,13 +48,13 @@ def register_task(config, func, **kwargs):
 
     """
     wrapped = _wrap_task(func)
-    task = config.registry["celery.app"].task(
+    task = config.registry["pyramid_tasks.app"].task(
         wrapped,
         bind=True,
         shared=False,
         **kwargs,
     )
-    config.registry["celery.task_map"][func] = task
+    config.registry["pyramid_tasks.task_map"][func] = task
 
 
 def _wrap_task(func):
@@ -78,7 +78,7 @@ def _task_request(task):
 
     """
     registry = task.app.pyramid_config.registry
-    env = pyramid.scripting.prepare(registry=registry)
+    env = prepare(registry=registry)
     try:
         yield env["request"]
     finally:
@@ -102,18 +102,27 @@ def task(**kwargs):
     return wrapper
 
 
-def delay(request, func_or_name, *args, **kwargs):
+def delay_task(request, func_or_name, *args, **kwargs):
     """
     Add a task to the queue, for celery to pickup.  ``func_or_name`` can either
     by the name of the task (str) or the task function itself.
 
     """
-    task_map = request.registry["celery.task_map"]
+    task_map = request.registry["pyramid_tasks.task_map"]
     if isinstance(func_or_name, str):
-        celery_app = request.registry["celery.app"]
+        celery_app = request.registry["pyramid_tasks.app"]
         task = celery_app.tasks[func_or_name]
     elif func_or_name in task_map:
         task = task_map[func_or_name]
     else:
         raise ValueError("Not a valid task.")
     return task.apply_async(args=args, kwargs=kwargs)
+
+
+def get_task_result(request, task_id):
+    """
+    Get a result object from celery.
+
+    """
+    app = request.registry["pyramid_tasks.app"]
+    return app.AsyncResult(task_id)
