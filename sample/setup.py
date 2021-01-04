@@ -14,4 +14,7 @@ setup(
     name='sampleapp',
     packages=find_packages(),
     install_requires=REQUIRES,
+    entry_points={
+        'paste.app_factory': ['main=sampleapp:application'],
+    },
 )

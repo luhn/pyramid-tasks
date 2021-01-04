@@ -14,6 +14,11 @@ from .settings import extract_celery_settings
 global_app = None
 
 
+def set_global_app(app):
+    global global_app
+    global_app = app
+
+
 def includeme(config):
     settings = config.get_settings()
     if global_app is None:
