@@ -32,7 +32,7 @@ def includeme(config):
     app.pyramid_config = config
     config.registry["pyramid_tasks.app"] = app
     config.registry["pyramid_tasks.task_map"] = dict()
-    config.add_directive("make_celery_app", _make_celery_app)
+    config.add_directive("make_celery_app", make_celery_app)
     config.add_directive("register_task", register_task)
     config.action(
         ("celery", "finalize"),
@@ -42,7 +42,7 @@ def includeme(config):
     config.add_request_method(get_task_result)
 
 
-def _make_celery_app(config):
+def make_celery_app(config):
     config.commit()
     return config.registry["pyramid_tasks.app"]
 
