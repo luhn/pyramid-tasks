@@ -1,4 +1,4 @@
-# Pyramid Task Sample App
+# Pyramid Tasks Sample App
 
 This app stores an append-only ledger and totals the ledger values in a task.
 
@@ -20,7 +20,7 @@ For the most part it's standard Pyramid configuration, adding routes and views.
 We'll skip over the boring parts, but I want to highlight a few lines.
 
 We set the `celery.broker_url` and `celery.result_backend` settings if not already set.
-Pyramid Task will extract these from the Pyramid settings and set `broker_url` and `result_backend` in the Celery config.
+Pyramid Tasks will extract these from the Pyramid settings and set `broker_url` and `result_backend` in the Celery config.
 This is how we tell Celery to use Redis for the broker and backend.
 
 ```python
@@ -28,7 +28,7 @@ settings.setdefault("celery.broker_url", redis_url)
 settings.setdefault("celery.result_backend", redis_url)
 ```
 
-We of course need to include Pyramid Task into the celery config.
+We of course need to include Pyramid Tasks into the celery config.
 
 ```python
 config.include("pyramid_tasks")
@@ -101,10 +101,10 @@ def total_task(request, delay=0.0):
     return sum((int(val.decode("ascii")) for val in values), 0)
 ```
 
-You'll see the first argument is `request`, which is added by Pyramid Task.
+You'll see the first argument is `request`, which is added by Pyramid Tasks.
 This is a request just like the one used by our Pyramid app, pulling from the same configuration.
 With no extra code or wrangling of Celery, we can use `request.redis` in our task.
-This is the magic of Pyramid Task:  You can write your task code in the same way you write your view code.
+This is the magic of Pyramid Tasks:  You can write your task code in the same way you write your view code.
 
 It's worth noting that althugh `request ` is a request object, it's not the same request object that queued the task.
 If you inspect `request.url` or `request.GET`, you'll find them quite empty.
@@ -136,7 +136,7 @@ There are a couple other files in the `sampleapp` package that I'll briefly touc
 
 `sampleapp/__main__.py` boots a simple WSGI server on port 8000.
 
-`sampleapp/celery.py` runs `app = configure().make_celery_app()`, which sets `app` to the Celery application created by Pyramid Task.
+`sampleapp/celery.py` runs `app = configure().make_celery_app()`, which sets `app` to the Celery application created by Pyramid Tasks.
 When you run `celery -A sampleapp worker`, Celery will find `app` and use it in the worker.
 
 If you're using `pserve` to run your application, these two files are not required.
