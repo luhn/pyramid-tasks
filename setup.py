@@ -20,6 +20,12 @@ EXTRAS_REQUIRE = {
     'testing': ['pytest>=6,<7'],
 }
 
+DESCRIPTION = (
+    'Bring parity to Pyramid and Celery by creating a full Pyramid '
+    'application in the Celery worker and providing a request object for each '
+    'task.'
+)
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -28,7 +34,7 @@ with open("README.md", "r") as fh:
 setup(
     name='pyramid-tasks',
     version=VERSION,
-    description='Celery-powered tasks for Pyramid applications.',
+    description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/luhn/pyramid-tasks/',
