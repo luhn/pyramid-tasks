@@ -2,11 +2,21 @@ from setuptools import find_packages, setup
 
 VERSION = "0.1.0"
 CLASSIFIERS = [
-    "Programming Language :: Python :: 3",
+    "Development Status :: 3 - Alpha",
+    "Framework :: Pyramid",
+    "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Framework :: Pyramid",
-    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Object Brokering",
 ]
 
 
