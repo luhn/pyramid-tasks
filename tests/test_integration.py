@@ -47,6 +47,16 @@ def test_simple_integration(test_config):
     assert result.get() == 5
 
 
+def test_task_by_function_integration(test_config):
+    def add_task(request, x, y):
+        return x + y
+
+    test_config.register_task(add_task, name="add")
+    with make_request_with_worker(test_config) as request:
+        result = request.delay_task(add_task, 2, 3)
+    assert result.get() == 5
+
+
 def test_get_task_result_integration(test_config):
     def add_task(request, x, y):
         return x + y
