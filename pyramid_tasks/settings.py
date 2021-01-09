@@ -109,7 +109,6 @@ def extract_celery_settings(settings):
         location = celery_settings
         for part in parts:
             location = location.setdefault(part, dict())
-        print(celery_settings)
         if key in BOOL_SETTINGS:
             value = asbool(value)
         elif key in INT_SETTINGS:
