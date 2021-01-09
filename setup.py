@@ -17,10 +17,12 @@ REQUIRES = [
 ]
 EXTRAS_REQUIRE = {
     "testing": [
+        "pytest~=6.1",
+    ],
+    "linting": [
         "black==20.8b1",
         "flake8~=3.8.4",
         "isort~=5.6",
-        "pytest~=6.1",
     ],
 }
 

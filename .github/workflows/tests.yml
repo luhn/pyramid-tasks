@@ -37,7 +37,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Install
-        run: pip install .[testing]
+        run: pip install .[linting]
       - name: Flake8
         run: flake8 pyramid_tasks tests
       - name: Black
