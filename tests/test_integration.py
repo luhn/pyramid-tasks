@@ -57,6 +57,13 @@ def test_task_by_function_integration(test_config):
     assert result.get() == 5
 
 
+def test_task_venusian_integration(test_config):
+    test_config.include("tests.pkgs.venusianapp")
+    with make_request_with_worker(test_config) as request:
+        result = request.delay_task("venusian_add_task", 2, 3)
+    assert result.get() == 5
+
+
 def test_get_task_result_integration(test_config):
     def add_task(request, x, y):
         return x + y
