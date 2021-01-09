@@ -1,5 +1,6 @@
 from celery import Celery, signals
 from pyramid.paster import get_app
+
 from . import set_global_app
 
 celery = Celery(autofinalize=False)
