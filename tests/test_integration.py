@@ -64,5 +64,5 @@ def test_task_request_argument_integration(test_config):
     app = test_config.make_celery_app()
     with make_worker(test_config):
         app.tasks["test"].apply_async().get()
-    request = task.call_args.args[0]
+    request = task.call_args[0][0]
     assert request.registry == test_config.registry
