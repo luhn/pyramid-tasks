@@ -10,7 +10,7 @@ Pyramid Tasks aims to bridge this gap by
 You can use the same configuration for Celery that you do Pyramid, including a Paste-style ini file.
 Bringing parity to Pyramid and Celery means you can write code for Pyramid and have the code *just work* in Celery.
 
-To see Pyramid Tasks in action, check out the [sample app](./sample/).
+To see Pyramid Tasks in action, check out the [sample app](https://github.com/luhn/pyramid-tasks/tree/main/sample).
 
 ## Getting Started
 
