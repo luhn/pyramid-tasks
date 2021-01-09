@@ -1,0 +1,46 @@
+name: Tests
+
+on:
+  - push
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        py:
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "pypy3"
+
+    name: "Python: ${{ matrix.py }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.py }}
+      - name: Install
+        run: pip install .[testing]
+      - name: Running tests
+        run: pytest tests -v
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install
+        run: pip install .[testing]
+      - name: Flake8
+        run: flake8 pyramid_tasks tests
+      - name: Black
+        run: black --check pyramid_tasks tests
+      - name: isort
+        run: isort --check pyramid_tasks tests
