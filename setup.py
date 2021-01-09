@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
     "Framework :: Pyramid",
