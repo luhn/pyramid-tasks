@@ -84,3 +84,17 @@ def test_task_request_argument_integration(test_config):
         app.tasks["test"].apply_async().get()
     request = task.call_args[0][0]
     assert request.registry == test_config.registry
+
+
+def test_task_tween_integration(test_config):
+    from tests.pkgs.tweenapp import IDatabase
+
+    test_config.include("tests.pkgs.tweenapp")
+
+    db = test_config.registry.queryUtility(IDatabase)
+    with db:
+        db["counter"] = 3
+
+    app = test_config.make_celery_app()
+    with make_worker(test_config):
+        assert app.tasks["increment"].apply_async((4,)).get() == 7
