@@ -1,0 +1,20 @@
+
+services:
+  web:
+    build: .
+    command: ["python", "-m", "basicapp"]
+    environment:
+      - REDIS_URL=redis://redis
+    ports:
+      - "8000:8000"
+    links:
+      - redis
+  celery:
+    build: .
+    command: ["celery", "-A", "basicapp", "worker", "-l", "INFO"]
+    environment:
+      - REDIS_URL=redis://redis
+    links:
+      - redis
+  redis:
+    image: redis
