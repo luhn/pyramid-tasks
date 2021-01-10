@@ -134,6 +134,26 @@ See the Celery docs for more information.
 `AsyncResult` also has an `id` property.
 If you store this property somewhere, such as a client session, you can use `request.get_task_result(id)` to return a new `AsyncResult` object.
 
+## Periodic Tasks
+
+Pyramid Tasks supports [Celery Beat](https://docs.celeryproject.org/en/stable/userguide/periodic-tasks.html) for running periodic tasks.
+After registering a task, use `config.add_periodic_task` to schedule the task.
+The arguments mirror [Celery.add_periodic_task](https://docs.celeryproject.org/en/stable/reference/celery.html#celery.Celery.add_periodic_task):
+
+```python
+config.add_periodic_task(
+    5.0,  # Run every five seconds
+    'mytask',
+    ('foo', 'bar'),  # Position arguments passed to task
+    {'fizz': 'buzz'},  # Keyword arguments passed to task
+)
+```
+
+You can also use [celery.schedules.crontab](https://docs.celeryproject.org/en/stable/reference/celery.schedules.html#celery.schedules.crontab)
+as the first argument to use crontab-style scheduling.
+
+To see Celery Beat in action, check out the [beat sample app](https://github.com/luhn/pyramid-tasks/tree/main/examples/beat/).
+
 ## Acknowledgements
 
 Pyramid Tasks is heavily inspired by the code of PyPA's [Warehouse](https://github.com/pypa/warehouse/) project.

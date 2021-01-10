@@ -3,6 +3,7 @@ from contextlib import contextmanager
 
 import celery
 import venusian
+from pyramid.interfaces import PHASE0_CONFIG, PHASE1_CONFIG
 from pyramid.scripting import prepare
 
 from .settings import extract_celery_settings
@@ -34,9 +35,13 @@ def includeme(config):
     config.registry["pyramid_tasks.task_map"] = dict()
     config.add_directive("make_celery_app", make_celery_app)
     config.add_directive("register_task", register_task)
+    config.add_directive(
+        "add_periodic_task", add_periodic_task, action_wrap=True
+    )
     config.action(
         ("celery", "finalize"),
         config.registry["pyramid_tasks.app"].finalize,
+        order=PHASE0_CONFIG,
     )
     config.add_request_method(delay_task)
     config.add_request_method(get_task_result)
@@ -107,21 +112,45 @@ def task(**kwargs):
     return wrapper
 
 
+def _get_task(registry, func_or_name):
+    """
+    Get task by function or name.
+
+    """
+    task_map = registry["pyramid_tasks.task_map"]
+    if isinstance(func_or_name, str):
+        celery_app = registry["pyramid_tasks.app"]
+        return celery_app.tasks[func_or_name]
+    elif func_or_name in task_map:
+        return task_map[func_or_name]
+    else:
+        raise ValueError("Not a valid task.")
+
+
 def delay_task(request, func_or_name, *args, **kwargs):
     """
     Add a task to the queue, for celery to pickup.  ``func_or_name`` can either
     by the name of the task (str) or the task function itself.
 
     """
-    task_map = request.registry["pyramid_tasks.task_map"]
-    if isinstance(func_or_name, str):
-        celery_app = request.registry["pyramid_tasks.app"]
-        task = celery_app.tasks[func_or_name]
-    elif func_or_name in task_map:
-        task = task_map[func_or_name]
-    else:
-        raise ValueError("Not a valid task.")
+    task = _get_task(request.registry, func_or_name)
     return task.apply_async(args=args, kwargs=kwargs)
+
+
+def add_periodic_task(
+    config, schedule, func_or_name, args=(), kwargs=None, **opts
+):
+    """
+    Add a period task.
+
+    """
+
+    def add():
+        task = _get_task(config.registry, func_or_name)
+        app = config.registry["pyramid_tasks.app"]
+        app.add_periodic_task(schedule, task, args, kwargs, **opts)
+
+    config.action(None, add, order=PHASE1_CONFIG)
 
 
 def get_task_result(request, task_id):
