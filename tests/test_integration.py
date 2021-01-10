@@ -19,13 +19,14 @@ def test_config():
         "celery.result_backend": "cache+memory://",
         "celery.broker_heartbeat": 0,
     }
-    with _testConfig(settings=settings) as config:
+    with _testConfig(settings=settings, autocommit=False) as config:
         config.include("pyramid_tasks")
         yield config
 
 
 @contextmanager
 def make_request_with_worker(config):
+    config.commit()
     with prepare(registry=config.registry) as env:
         with make_worker(config):
             yield env["request"]

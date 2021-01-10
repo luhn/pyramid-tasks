@@ -1,12 +1,9 @@
-import functools
-from contextlib import contextmanager
-
 import celery
 import venusian
-from pyramid.interfaces import PHASE0_CONFIG, PHASE1_CONFIG
-from pyramid.scripting import prepare
+from pyramid.interfaces import PHASE1_CONFIG, PHASE2_CONFIG, PHASE3_CONFIG
 
 from .settings import extract_celery_settings
+from .tweens import REQUEST_TWEEN, ITaskTweens, add_task_tween
 
 # If set, pyramid_tasks will use this Celery application rather than make a new
 # one.  This is necessary because when running a worker via an ini file (see
@@ -38,10 +35,12 @@ def includeme(config):
     config.add_directive(
         "add_periodic_task", add_periodic_task, action_wrap=True
     )
+    config.add_directive("add_task_tween", add_task_tween, action_wrap=True)
+    config.add_task_tween(REQUEST_TWEEN)
     config.action(
         ("celery", "finalize"),
         config.registry["pyramid_tasks.app"].finalize,
-        order=PHASE0_CONFIG,
+        order=PHASE2_CONFIG,
     )
     config.add_request_method(delay_task)
     config.add_request_method(get_task_result)
@@ -52,48 +51,31 @@ def make_celery_app(config):
     return config.registry["pyramid_tasks.app"]
 
 
-def register_task(config, func, **kwargs):
+def register_task(config, func, name=None, **kwargs):
     """
     Register a new task with Celery.
 
     """
-    wrapped = _wrap_task(func)
-    task = config.registry["pyramid_tasks.app"].task(
-        wrapped,
-        bind=True,
-        shared=False,
-        **kwargs,
-    )
-    config.registry["pyramid_tasks.task_map"][func] = task
+    registry = config.registry
+    app = registry["pyramid_tasks.app"]
+    name = name or app.gen_task_name(func)
 
+    def register():
+        tweens = registry.queryUtility(ITaskTweens)
+        if tweens:
+            handler = tweens(registry, func)
+        else:
+            handler = func
+        task = app.task(
+            handler,
+            name=name,
+            shared=False,
+            **kwargs,
+        )
+        config.registry["pyramid_tasks.task_map"][func] = task
 
-def _wrap_task(func):
-    """
-    Inject a Pyramid request into the task arguments.
-
-    """
-
-    @functools.wraps(func)
-    def wrapped(self, *args, **kwargs):
-        with _task_request(self) as request:
-            return func(request, *args, **kwargs)
-
-    return wrapped
-
-
-@contextmanager
-def _task_request(task):
-    """
-    Create a new Pyramid request from a Celery task.
-
-    """
-    registry = task.app.pyramid_config.registry
-    env = prepare(registry=registry)
-    try:
-        yield env["request"]
-    finally:
-        env["request"]._process_finished_callbacks()
-        env["closer"]()
+    discriminator = ("register task", name)
+    config.action(discriminator, register, order=PHASE1_CONFIG)
 
 
 def task(**kwargs):
@@ -150,7 +132,7 @@ def add_periodic_task(
         app = config.registry["pyramid_tasks.app"]
         app.add_periodic_task(schedule, task, args, kwargs, **opts)
 
-    config.action(None, add, order=PHASE1_CONFIG)
+    config.action(None, add, order=PHASE3_CONFIG)
 
 
 def get_task_result(request, task_id):

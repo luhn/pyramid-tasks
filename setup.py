@@ -21,9 +21,10 @@ CLASSIFIERS = [
 
 
 REQUIRES = [
-    "pyramid>=1.9,<2",
     "celery>=4,<5",
-    "venusian",
+    "pyramid>=1.9,<2",
+    "venusian >= 1.0",
+    "zope.interface >= 3.8.0",
 ]
 EXTRAS_REQUIRE = {
     "testing": [
