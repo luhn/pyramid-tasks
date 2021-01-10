@@ -1,0 +1,18 @@
+
+services:
+  celery:
+    build: .
+    command: ["celery", "-A", "basicapp", "worker", "-l", "INFO"]
+    environment:
+      - REDIS_URL=redis://redis
+    links:
+      - redis
+  beat:
+    build: .
+    command: ["celery", "-A", "basicapp", "beat", "-l", "INFO"]
+    environment:
+      - REDIS_URL=redis://redis
+    links:
+      - redis
+  redis:
+    image: redis
