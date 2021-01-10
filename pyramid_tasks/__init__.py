@@ -58,7 +58,7 @@ def register_task(config, func, name=None, **kwargs):
     """
     registry = config.registry
     app = registry["pyramid_tasks.app"]
-    name = name or app.gen_task_name(func)
+    name = name or app.gen_task_name(func.__name__, func.__module__)
 
     def register():
         tweens = registry.queryUtility(ITaskTweens)
