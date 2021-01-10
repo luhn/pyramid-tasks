@@ -10,7 +10,7 @@ Pyramid Tasks aims to bridge this gap by
 You can use the same configuration for Celery that you do Pyramid, including a Paste-style ini file.
 Bringing parity to Pyramid and Celery means you can write code for Pyramid and have the code *just work* in Celery.
 
-To see Pyramid Tasks in action, check out the [sample app](https://github.com/luhn/pyramid-tasks/tree/main/sample).
+To see Pyramid Tasks in action, check out the [sample app](https://github.com/luhn/pyramid-tasks/tree/main/examples/basic/).
 
 ## Getting Started
 
@@ -69,7 +69,7 @@ This will create a Pyramid app via the same process `pserve` does, allowing you 
 You can also create a Celery app using `config.make_celery_app()`, just like you use `config.make_wsgi_app()`.
 If you add `app = config.make_celery_app()` to `celery.py` in your project's package, you can invoke `celery -A myproject worker` to boot a worker.
 
-To see both methods of running a worker in action, take a look at the [sample app](./sampleapp/').
+To see both methods of running a worker in action, take a look at the [sample app](https://github.com/luhn/pyramid-tasks/tree/main/examples/basic/).
 
 ## Registering Tasks
 

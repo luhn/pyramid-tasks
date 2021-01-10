@@ -11,10 +11,10 @@ REQUIRES = [
 
 
 setup(
-    name='sampleapp',
+    name='basicapp',
     packages=find_packages(),
     install_requires=REQUIRES,
     entry_points={
-        'paste.app_factory': ['main=sampleapp:application'],
+        'paste.app_factory': ['main=basicapp:application'],
     },
 )
