@@ -1,3 +1,5 @@
+import os
+
 import zope.sqlalchemy
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
@@ -33,7 +35,17 @@ def includeme(config):
         }
     )
     config.include("pyramid_tm")
-    config.include("pyramid_tasks.transaction")
+
+    settings = config.get_settings()
+    if "sqlalchemy.url" not in settings:
+        sqlalchemy_url = os.environ.get(
+            "SQLALCHEMY_URL", "sqlite:///database.db"
+        )
+        config.add_settings(
+            {
+                "sqlalchemy.url": sqlalchemy_url,
+            }
+        )
 
     dbengine = get_engine(config.get_settings())
     Base.metadata.create_all(bind=dbengine)
