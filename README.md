@@ -152,6 +152,12 @@ config.add_periodic_task(
 You can also use [celery.schedules.crontab](https://docs.celeryproject.org/en/stable/reference/celery.schedules.html#celery.schedules.crontab)
 as the first argument to use crontab-style scheduling.
 
+You can run the Beat scheduler the same way you run the Celery worker.
+
+```sh
+celery -A pyramid_tasks beat --ini config.ini
+```
+
 To see Celery Beat in action, check out the [beat sample app](https://github.com/luhn/pyramid-tasks/tree/main/examples/beat/).
 
 ## Acknowledgements
