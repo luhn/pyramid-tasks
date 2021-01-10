@@ -63,7 +63,7 @@ def register_task(config, func, name=None, **kwargs):
     def register():
         tweens = registry.queryUtility(ITaskTweens)
         if tweens:
-            handler = tweens(registry, func)
+            handler = tweens(func, registry)
         else:
             handler = func
         task = app.task(

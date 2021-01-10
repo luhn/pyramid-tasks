@@ -62,7 +62,7 @@ def add_task_tween(config, name, under=None, over=None):
     config.action(discriminator, add, order=PHASE0_CONFIG)
 
 
-def request_tween_factory(registry, handler):
+def request_tween_factory(handler, registry):
     """
     A tween that creates a request and appends it to the task arguments
 
