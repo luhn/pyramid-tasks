@@ -10,8 +10,6 @@ from pyramid.scripting import prepare
 from pyramid.util import TopologicalSorter
 from zope.interface import Interface, implementer
 
-INGRESS = "INGRESS"
-MAIN = "MAIN"
 REQUEST_TWEEN = "pyramid_tasks.tweens.request_tween_factory"
 
 
@@ -27,12 +25,7 @@ class ITaskTweens(Interface):
 @implementer(ITaskTweens)
 class TaskTweens:
     def __init__(self):
-        self.sorter = TopologicalSorter(
-            default_before=None,
-            default_after=INGRESS,
-            first=INGRESS,
-            last=MAIN,
-        )
+        self.sorter = TopologicalSorter()
 
     def add(self, name, factory, under=None, over=None):
         self.sorter.add(name, factory, after=under, before=over)

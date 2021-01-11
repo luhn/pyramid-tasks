@@ -161,8 +161,7 @@ config.add_task_tween('myproject.tweens.my_tween_factory')
 
 You can also specify the ordering of task tweens by using `over` and/or `under` arguments, just like Pyramid tweens.
 A tween "over" another tween means it is executed earlier in the pipeline.
-The special attribute `pyramid_tasks.tweens.INGRESS` represents the top of the stack, `pyramid_tasks.tweens.MAIN` represents the bottom (i.e. the task itself).
-`pyramid_tasks.tweens.REQUEST_TWEEN` is a built-in tween that creates a request object and injects it as the first argument.
+`pyramid_tasks.tweens.REQUEST_TWEEN` is an attribute containing the name of a built-in tween that creates a request object and injects it as the first argument.
 Any tween that depends on a request object should be placed under `REQUEST_TWEEN`.
 
 ```python
