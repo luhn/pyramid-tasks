@@ -134,6 +134,58 @@ See the Celery docs for more information.
 `AsyncResult` also has an `id` property.
 If you store this property somewhere, such as a client session, you can use `request.get_task_result(id)` to return a new `AsyncResult` object.
 
+## Tweens
+
+Pyramid has a feature called [tweens](https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/hooks.html#registering-tweens)
+that lets developers add middleware to the request pipeline, which can be used for transaction management, performance monitoring, error handling, and much more.
+Pyramid Task has an analog to this feature called "task tweens."
+
+Task tweens operate in much the same way as tweens.
+A tween factory, given a task function and the application registry, returns a function.
+For example, here's the code used to inject a request as the first argument:
+
+```python
+def request_tween_factory(handler, registry):
+    def tween(*args, **kwargs):
+        with prepare(registry=registry) as env:
+            return handler(env["request"], *args, **kwargs)
+
+    return tween
+```
+
+Register a tween by calling `Configurator.add_task_tween` with a Zope-style dotted name for your factory function.
+
+```python
+config.add_task_tween('myproject.tweens.my_tween_factory')
+```
+
+You can also specify the ordering of task tweens by using `over` and/or `under` arguments, just like Pyramid tweens.
+A tween "over" another tween means it is executed earlier in the pipeline.
+The special attribute `pyramid_tasks.tweens.INGRESS` represents the top of the stack, `pyramid_tasks.tweens.MAIN` represents the bottom (i.e. the task itself).
+`pyramid_tasks.tweens.REQUEST_TWEEN` is a built-in tween that creates a request object and injects it as the first argument.
+Any tween that depends on a request object should be placed under `REQUEST_TWEEN`.
+
+```python
+config.add_task_tween('myproject.tweens.my_tween_factory')
+config.add_task_tween(
+    'myproject.tweens.another_factory',
+    over='myproject.tweens.my_tween_factory',
+    under=REQUEST_TWEEN,
+)
+```
+
+## pyramid_tm Integration
+
+[pyramid_tm](https://docs.pylonsproject.org/projects/pyramid-tm/en/latest/) is the recommended way of adding transaction management to Pyramid.
+For example, the [Pyramid cookiecutter](https://github.com/Pylons/pyramid-cookiecutter-starter)
+uses `pyramid_tm` and `zope.sqlalchemy` to integrate SQLAlchemy into Pyramid.
+
+Pyramid Tasks includes built-in support for pyramid_tm.
+It can be enabled by including `pyramid_tasks.transaction` in your project.
+This must be included after Pyramid Tasks, but doesn't need to be included before pyramid_tm.
+
+To see Pyramid Tasks, pyramid_tm, and SQLAlchemy in action, check out the [SQLAlchemy sample app](https://github.com/luhn/pyramid-tasks/tree/main/examples/sqlalchemy).
+
 ## Periodic Tasks
 
 Pyramid Tasks supports [Celery Beat](https://docs.celeryproject.org/en/stable/userguide/periodic-tasks.html) for running periodic tasks.
