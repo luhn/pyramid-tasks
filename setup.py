@@ -1,8 +1,8 @@
 from setuptools import find_packages, setup
 
-VERSION = "0.1.2"
+VERSION = "0.2.0"
 CLASSIFIERS = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Framework :: Pyramid",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
