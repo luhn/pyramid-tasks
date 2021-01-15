@@ -21,7 +21,7 @@ CLASSIFIERS = [
 
 
 REQUIRES = [
-    "celery>=4,<5",
+    "celery>=4,<6",
     "pyramid>=1.9,<2",
     "venusian >= 1.0",
     "zope.interface >= 3.8.0",
