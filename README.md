@@ -95,7 +95,7 @@ with Configurator() as config:
 
 Once a task is registered, you can add it to the work queue using `request.delay_task`.
 This takes the task function or a string of the name of the task as the first argument.
-The remaining arguments (positional and keywork) will be passed to the task.
+The remaining arguments (positional and keyword) will be passed to the task.
 When the task is invoked by a Celery worker, a request object will be created and passed as the first argument.
 
 This request object will share the same configuration as requests in the Pyramid application.
