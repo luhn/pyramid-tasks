@@ -88,7 +88,7 @@ def task(**kwargs):
         def callback(scanner, name, wrapped):
             scanner.config.register_task(wrapped, **kwargs)
 
-        venusian.attach(func, callback)
+        venusian.attach(func, callback, category="pyramid")
         return func
 
     return wrapper
