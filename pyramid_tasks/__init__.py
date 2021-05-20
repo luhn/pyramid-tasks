@@ -2,6 +2,7 @@ import celery
 import venusian
 from pyramid.interfaces import PHASE1_CONFIG, PHASE2_CONFIG, PHASE3_CONFIG
 
+from .events import BeforeTaskApply
 from .settings import extract_celery_settings
 from .tweens import REQUEST_TWEEN, ITaskTweens, add_task_tween
 
@@ -116,7 +117,12 @@ def delay_task(request, func_or_name, *args, **kwargs):
 
     """
     task = _get_task(request.registry, func_or_name)
-    return task.apply_async(args=args, kwargs=kwargs)
+    kwargs = {
+        "args": args,
+        "kwargs": kwargs,
+    }
+    request.registry.notify(BeforeTaskApply(request, task, kwargs))
+    return task.apply_async(**kwargs)
 
 
 def add_periodic_task(

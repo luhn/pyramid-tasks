@@ -6,6 +6,8 @@ from celery.contrib.testing.worker import start_worker
 from pyramid.scripting import prepare
 from pyramid.testing import testConfig as _testConfig
 
+from pyramid_tasks import BeforeTaskApply
+
 
 @pytest.fixture
 def test_config():
@@ -98,3 +100,20 @@ def test_task_tween_integration(test_config):
     app = test_config.make_celery_app()
     with make_worker(test_config):
         assert app.tasks["increment"].apply_async((4,)).get() == 7
+
+
+def test_task_before_apply_integration(test_config):
+    def add_headers(event):
+        assert event.request
+        assert event.task
+        event.kwargs.setdefault("headers", dict())["foo"] = "bar"
+
+    def task(request):
+        from celery import current_task
+
+        return current_task.request.foo
+
+    test_config.add_subscriber(add_headers, BeforeTaskApply)
+    test_config.register_task(task)
+    with make_request_with_worker(test_config) as request:
+        assert request.delay_task(task).get() == "bar"
