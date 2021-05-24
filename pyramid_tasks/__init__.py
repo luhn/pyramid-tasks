@@ -43,7 +43,8 @@ def includeme(config):
         config.registry["pyramid_tasks.app"].finalize,
         order=PHASE2_CONFIG,
     )
-    config.add_request_method(delay_task)
+    config.add_request_method(defer_task)
+    config.add_request_method(defer_task, "delay_task")  # Legacy
     config.add_request_method(get_task_result)
 
 
@@ -110,10 +111,11 @@ def _get_task(registry, func_or_name):
         raise ValueError("Not a valid task.")
 
 
-def delay_task(request, func_or_name, *args, **kwargs):
+def defer_task(request, func_or_name, *args, **kwargs):
     """
-    Add a task to the queue, for celery to pickup.  ``func_or_name`` can either
-    by the name of the task (str) or the task function itself.
+    Add a task to the work queue.  ``func_or_name`` can either by the name of
+    the task (str) or the task function itself.  args and kwargs will be passed
+    as-is to the task.
 
     """
     task = _get_task(request.registry, func_or_name)

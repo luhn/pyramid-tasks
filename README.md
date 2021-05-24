@@ -93,7 +93,7 @@ with Configurator() as config:
 
 ## Invoking a Task
 
-Once a task is registered, you can add it to the work queue using `request.delay_task`.
+Once a task is registered, you can add it to the work queue using `request.defer_task`.
 This takes the task function or a string of the name of the task as the first argument.
 The remaining arguments (positional and keyword) will be passed to the task.
 When the task is invoked by a Celery worker, a request object will be created and passed as the first argument.
@@ -111,7 +111,7 @@ from pyramid.config import Configurator
 
 
 def add_view(context, request):
-    request.delay_task(add, int(request.GET['x']), int(request.GET['y']))
+    request.defer_task(add, int(request.GET['x']), int(request.GET['y']))
     return 'OK\n'
 
 
@@ -127,7 +127,7 @@ with Configurator() as config:
 
 ## Getting Task Results
 
-`request.delay_task` returns a Celery [AsyncResult](https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.AsyncResult) object.
+`request.defer_task` returns a Celery [AsyncResult](https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.AsyncResult) object.
 You can use this object to check if the task has completed (`AsyncResult.ready()`) and to get the return value of the task (`AsyncResult.result`).
 See the Celery docs for more information.
 

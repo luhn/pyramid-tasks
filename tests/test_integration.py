@@ -46,6 +46,21 @@ def test_simple_integration(test_config):
 
     test_config.register_task(add_task, name="add")
     with make_request_with_worker(test_config) as request:
+        result = request.defer_task("add", 2, 3)
+    assert result.get() == 5
+
+
+def test_legacy_integration(test_config):
+    """
+    Test legacy `delay_task` call.
+
+    """
+
+    def add_task(request, x, y):
+        return x + y
+
+    test_config.register_task(add_task, name="add")
+    with make_request_with_worker(test_config) as request:
         result = request.delay_task("add", 2, 3)
     assert result.get() == 5
 
@@ -56,14 +71,14 @@ def test_task_by_function_integration(test_config):
 
     test_config.register_task(add_task, name="add")
     with make_request_with_worker(test_config) as request:
-        result = request.delay_task(add_task, 2, 3)
+        result = request.defer_task(add_task, 2, 3)
     assert result.get() == 5
 
 
 def test_task_venusian_integration(test_config):
     test_config.include("tests.pkgs.venusianapp")
     with make_request_with_worker(test_config) as request:
-        result = request.delay_task("venusian_add_task", 2, 3)
+        result = request.defer_task("venusian_add_task", 2, 3)
     assert result.get() == 5
 
 
@@ -73,7 +88,7 @@ def test_get_task_result_integration(test_config):
 
     test_config.register_task(add_task, name="add")
     with make_request_with_worker(test_config) as request:
-        task_id = request.delay_task("add", 2, 3).id
+        task_id = request.defer_task("add", 2, 3).id
         result = request.get_task_result(task_id)
     assert result.get() == 5
 
@@ -116,4 +131,4 @@ def test_task_before_apply_integration(test_config):
     test_config.add_subscriber(add_headers, BeforeTaskApply)
     test_config.register_task(task)
     with make_request_with_worker(test_config) as request:
-        assert request.delay_task(task).get() == "bar"
+        assert request.defer_task(task).get() == "bar"
