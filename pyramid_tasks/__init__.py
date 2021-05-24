@@ -1,10 +1,11 @@
 import celery
 import venusian
 from pyramid.interfaces import PHASE1_CONFIG, PHASE2_CONFIG, PHASE3_CONFIG
+from pyramid.scripting import prepare
 
 from .events import BeforeTaskApply
 from .settings import extract_celery_settings
-from .tweens import REQUEST_TWEEN, ITaskTweens, add_task_tween
+from .taskderivers import _apply_task_derivers, _clean_task_options
 
 # If set, pyramid_tasks will use this Celery application rather than make a new
 # one.  This is necessary because when running a worker via an ini file (see
@@ -36,8 +37,6 @@ def includeme(config):
     config.add_directive(
         "add_periodic_task", add_periodic_task, action_wrap=True
     )
-    config.add_directive("add_task_tween", add_task_tween, action_wrap=True)
-    config.add_task_tween(REQUEST_TWEEN)
     config.action(
         ("celery", "finalize"),
         config.registry["pyramid_tasks.app"].finalize,
@@ -47,6 +46,7 @@ def includeme(config):
     config.add_request_method(defer_task_with_options)
     config.add_request_method(defer_task, "delay_task")  # Legacy
     config.add_request_method(get_task_result)
+    config.include(".taskderivers")
 
 
 def make_celery_app(config):
@@ -64,21 +64,33 @@ def register_task(config, func, name=None, **kwargs):
     name = name or app.gen_task_name(func.__name__, func.__module__)
 
     def register():
-        tweens = registry.queryUtility(ITaskTweens)
-        if tweens:
-            handler = tweens(func, registry)
-        else:
-            handler = func
+        derived = _apply_task_derivers(config, func, name, kwargs)
+        handler = _make_task_handler(config.registry, derived)
+        options = _clean_task_options(config, kwargs)
         task = app.task(
             handler,
             name=name,
             shared=False,
-            **kwargs,
+            **options,
         )
         config.registry["pyramid_tasks.task_map"][func] = task
 
     discriminator = ("register task", name)
     config.action(discriminator, register, order=PHASE1_CONFIG)
+
+
+def _make_task_handler(registry, func):
+    """
+    Return a task handler that creates a new request and injects it as the
+    first positional argument in the wrapped function.
+
+    """
+
+    def handler(*args, **kwargs):
+        with prepare(registry=registry) as env:
+            return func(env["request"], *args, **kwargs)
+
+    return handler
 
 
 def task(**kwargs):

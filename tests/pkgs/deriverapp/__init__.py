@@ -1,23 +1,12 @@
-from zope.interface import Interface
-
-from pyramid_tasks.tweens import REQUEST_TWEEN
-
-
 def includeme(config):
-    config.registry.registerUtility(MockDatabase(), IDatabase)
+    config.registry["db"] = MockDatabase()
     config.add_request_method(
-        lambda req: req.registry.queryUtility(IDatabase),
+        lambda req: req.registry["db"],
         name="db",
         reify=True,
     )
-    config.add_task_tween(
-        "tests.pkgs.tweenapp.transaction_tween_factory", under=REQUEST_TWEEN
-    )
-    config.register_task(increment_task, name="increment")
-
-
-class IDatabase(Interface):
-    pass
+    config.add_task_deriver(transaction_task_deriver)
+    config.register_task(increment_task, name="increment", in_transaction=True)
 
 
 class MockDatabase:
@@ -55,12 +44,15 @@ class MockDatabase:
         self._store[key] = value
 
 
-def transaction_tween_factory(handler, registry):
-    def tween(request, *args, **kwargs):
-        with request.db:
-            return handler(request, *args, **kwargs)
+def transaction_task_deriver(info, task):
+    if not info.options.get("in_transaction", False):
+        return task
 
-    return tween
+    def derived(request, *args, **kwargs):
+        with request.db:
+            return task(request, *args, **kwargs)
+
+    return derived
 
 
 def increment_task(request, x=1):

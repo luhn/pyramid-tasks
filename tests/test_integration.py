@@ -121,12 +121,10 @@ def test_task_request_argument_integration(test_config):
     assert request.registry == test_config.registry
 
 
-def test_task_tween_integration(test_config):
-    from tests.pkgs.tweenapp import IDatabase
+def test_task_deriver_integration(test_config):
+    test_config.include("tests.pkgs.deriverapp")
 
-    test_config.include("tests.pkgs.tweenapp")
-
-    db = test_config.registry.queryUtility(IDatabase)
+    db = test_config.registry["db"]
     with db:
         db["counter"] = 3
 
