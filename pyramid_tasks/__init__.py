@@ -44,6 +44,7 @@ def includeme(config):
         order=PHASE2_CONFIG,
     )
     config.add_request_method(defer_task)
+    config.add_request_method(defer_task_with_options)
     config.add_request_method(defer_task, "delay_task")  # Legacy
     config.add_request_method(get_task_result)
 
@@ -113,18 +114,41 @@ def _get_task(registry, func_or_name):
 
 def defer_task(request, func_or_name, *args, **kwargs):
     """
-    Add a task to the work queue.  ``func_or_name`` can either by the name of
-    the task (str) or the task function itself.  args and kwargs will be passed
-    as-is to the task.
+    Add a task to the work queue.  All positional and keyword arguments passed
+    into this method will be passed through to the task.  Convenience function
+    for ``defer_task_with_options``.
 
     """
+    return defer_task_with_options(
+        request,
+        func_or_name,
+        args=args,
+        kwargs=kwargs,
+    )
+
+
+def defer_task_with_options(
+    request, func_or_name, args=tuple(), kwargs=None, **options
+):
+    """
+    Add a task to the work queue.  ``func_or_name`` can either by the name of
+    the task (str) or the task function itself.  ``args`` and ``kwargs`` will
+    be passed into the task.  Additional options will be passed into
+    ``Task.apply_async``.  Please refer to Celery documentation to see options.
+
+    """
+    kwargs = kwargs if kwargs is not None else dict()
     task = _get_task(request.registry, func_or_name)
-    kwargs = {
-        "args": args,
-        "kwargs": kwargs,
-    }
-    request.registry.notify(BeforeTaskApply(request, task, kwargs))
-    return task.apply_async(**kwargs)
+    request.registry.notify(
+        BeforeTaskApply(
+            request=request,
+            task=task,
+            args=args,
+            kwargs=kwargs,
+            options=options,
+        )
+    )
+    return task.apply_async(args, kwargs, **options)
 
 
 def add_periodic_task(

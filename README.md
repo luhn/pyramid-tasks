@@ -125,6 +125,18 @@ with Configurator() as config:
     config.register_task(add, name='add')
 ```
 
+You can also use `request.defer_task_with_options` to pass options into Celery.
+See the [Celery docs](https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.apply_async) for details on what options are available.
+For example:
+
+```python
+def add_view(context, request):
+    args = int(request.GET['x']), int(request.GET['y'])
+    request.defer_task_with_options(add, args=args, countdown=5)
+    return 'OK\n'
+```
+
+
 ## Getting Task Results
 
 `request.defer_task` returns a Celery [AsyncResult](https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.AsyncResult) object.

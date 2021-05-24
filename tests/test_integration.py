@@ -46,8 +46,26 @@ def test_simple_integration(test_config):
 
     test_config.register_task(add_task, name="add")
     with make_request_with_worker(test_config) as request:
-        result = request.defer_task("add", 2, 3)
-    assert result.get() == 5
+        assert request.defer_task("add", 2, 3).get() == 5
+
+
+def test_options_integration(test_config):
+    """
+    Test `defer_task_with_options`.
+
+    """
+
+    def test_task(request):
+        from celery import current_task
+
+        return current_task.request.foo
+
+    test_config.register_task(test_task, name="test")
+    with make_request_with_worker(test_config) as request:
+        result = request.defer_task_with_options(
+            "test", headers={"foo": "bar"}
+        )
+        result.get() == "bar"
 
 
 def test_legacy_integration(test_config):
@@ -121,7 +139,9 @@ def test_task_before_apply_integration(test_config):
     def add_headers(event):
         assert event.request
         assert event.task
-        event.kwargs.setdefault("headers", dict())["foo"] = "bar"
+        assert event.args == tuple()
+        assert event.kwargs == dict()
+        event.options.setdefault("headers", dict())["foo"] = "bar"
 
     def task(request):
         from celery import current_task
