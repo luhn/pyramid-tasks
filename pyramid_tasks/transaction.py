@@ -2,18 +2,15 @@
 Support for transaction/pyramid_tm.
 
 """
-from .tweens import REQUEST_TWEEN
 
 
 def includeme(config):
-    config.add_task_tween(
-        "pyramid_tasks.transaction.transaction_tween", under=REQUEST_TWEEN
-    )
+    config.add_task_deriver(transaction_task_deriver)
 
 
-def transaction_tween(handler, registry):
-    def tween(request, *args, **kwargs):
+def transaction_task_deriver(info, task):
+    def deriver(request, *args, **kwargs):
         with request.tm:
-            return handler(request, *args, **kwargs)
+            return task(request, *args, **kwargs)
 
-    return tween
+    return deriver

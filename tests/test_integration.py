@@ -128,9 +128,17 @@ def test_task_deriver_integration(test_config):
     with db:
         db["counter"] = 3
 
-    app = test_config.make_celery_app()
-    with make_worker(test_config):
-        assert app.tasks["increment"].apply_async((4,)).get() == 7
+    with make_request_with_worker(test_config) as request:
+        assert request.defer_task("increment", 4).get() == 7
+
+
+def test_transaction_integration(test_config):
+    test_config.include("tests.pkgs.transactionapp")
+
+    with make_request_with_worker(test_config) as request:
+        request.defer_task("increment", 1).get()
+        request.defer_task("increment", 3).get()
+        assert request.defer_task("total").get() == 4
 
 
 def test_task_before_apply_integration(test_config):
