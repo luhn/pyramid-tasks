@@ -2,12 +2,6 @@ from zope.interface import Attribute, Interface
 
 
 class ITaskDeriver(Interface):
-    options = Attribute(
-        "A list of supported options to be passed to "
-        ":meth:`pyramid.config.Configurator.register_task`. "
-        "This attribute is optional."
-    )
-
     def __call__(task, info):
         """
         Derive a new task from the supplied task.

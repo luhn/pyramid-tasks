@@ -58,18 +58,6 @@ def _apply_task_derivers(config, task, name, options):
     return task
 
 
-def _clean_task_options(config, options):
-    """
-    Remove options that are for task derivers, leaving only Celery options.
-
-    """
-    derivers = config.registry.getUtility(ITaskDerivers).sorted()
-    for name, deriver in derivers:
-        for opt in getattr(deriver, "options", []):
-            options.pop(opt, None)
-    return options
-
-
 class TaskDeriverInfo:
     def __init__(self, registry, package, name, options, original_func):
         self.registry = registry
