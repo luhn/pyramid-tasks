@@ -150,9 +150,7 @@ def test_task_before_apply_integration(test_config):
         event.options.setdefault("headers", dict())["foo"] = "bar"
 
     def task(request):
-        from celery import current_task
-
-        return current_task.request.foo
+        return request.current_task.request.foo
 
     test_config.add_subscriber(add_headers, BeforeDeferTask)
     test_config.register_task(task)

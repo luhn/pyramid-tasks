@@ -46,6 +46,7 @@ def includeme(config):
     config.add_request_method(defer_task_with_options)
     config.add_request_method(defer_task, "delay_task")  # Legacy
     config.add_request_method(get_task_result)
+    config.add_request_method(current_task, property=True)
     config.include(".taskderivers")
 
 
@@ -185,3 +186,12 @@ def get_task_result(request, task_id):
     """
     app = request.registry["pyramid_tasks.app"]
     return app.AsyncResult(task_id)
+
+
+def current_task(request):
+    """
+    Return the task currently being executed.
+
+    """
+    app = request.registry["pyramid_tasks.app"]
+    return app.current_worker_task
