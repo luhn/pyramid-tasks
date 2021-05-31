@@ -1,4 +1,4 @@
-class BeforeTaskApply:
+class BeforeDeferTask:
     """
     This event is emitted before a task is queued (``Task.apply_async()``).
 

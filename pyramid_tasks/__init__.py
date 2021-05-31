@@ -3,7 +3,7 @@ import venusian
 from pyramid.interfaces import PHASE1_CONFIG, PHASE2_CONFIG, PHASE3_CONFIG
 from pyramid.scripting import prepare
 
-from .events import BeforeTaskApply
+from .events import BeforeDeferTask
 from .settings import extract_celery_settings
 from .taskderivers import _apply_task_derivers
 
@@ -151,7 +151,7 @@ def defer_task_with_options(
     kwargs = kwargs if kwargs is not None else dict()
     task = _get_task(request.registry, func_or_name)
     request.registry.notify(
-        BeforeTaskApply(
+        BeforeDeferTask(
             request=request,
             task=task,
             args=args,

@@ -6,7 +6,7 @@ from celery.contrib.testing.worker import start_worker
 from pyramid.scripting import prepare
 from pyramid.testing import testConfig as _testConfig
 
-from pyramid_tasks import BeforeTaskApply
+from pyramid_tasks import BeforeDeferTask
 
 
 @pytest.fixture
@@ -154,7 +154,7 @@ def test_task_before_apply_integration(test_config):
 
         return current_task.request.foo
 
-    test_config.add_subscriber(add_headers, BeforeTaskApply)
+    test_config.add_subscriber(add_headers, BeforeDeferTask)
     test_config.register_task(task)
     with make_request_with_worker(test_config) as request:
         assert request.defer_task(task).get() == "bar"
