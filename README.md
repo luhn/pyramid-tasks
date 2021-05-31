@@ -223,6 +223,86 @@ celery -A pyramid_tasks beat --ini config.ini
 
 To see Celery Beat in action, check out the [beat sample app](https://github.com/luhn/pyramid-tasks/tree/main/examples/beat/).
 
+## Extending Tasks:  Task Derivers
+
+Task Derivers are analogous to Pyramid's [View Derivers](https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/hooks.html#view-derivers).
+They allow you to transform the task before registering it, such as wrapping the task in a transaction or adding metric collection.
+
+A task deriver is a callable that takes two arguments:  A task function and an info object.
+The deriver should return a task callable.
+The info object has the following attributes:
+
+* `registry` — The registry for the current Pyramid application.
+* `package` — The package where the configuration statement was found.
+* `name` — The name of the task.
+* `options` — The options passed in to the register task action.
+* `original_func` — The original task function.
+
+You can register a new task deriver with the `Configurator.add_task_deriver` method.
+The first argument is the task deriver.
+The second argument is the name.
+If omitted, the name of the task deriver function will be used.
+It also optionally takes `over` and `under` arguments, which work the same as with Pyramid's view deriver.
+
+For example, here's a simple task deriver that wraps the task in a database transaction:
+
+```python
+def transaction_deriver(task, info):
+    def wrapped(request, *args, **kwargs):
+        with request.db:
+            task(request, *args, **kwargs)
+
+    return wrapped
+
+def includeme(config):
+    config.add_task_deriver(transaction_deriver)
+```
+
+You can pass in options when registering the task to configure your task derivers.
+For example, here's the same transaction task deriver as above, but now will only wrap the task if the `in_transaction` option is set.
+
+```python
+def transaction_deriver(task, info):
+    def wrapped(request, *args, **kwargs):
+        with request.db:
+            task(request, *args, **kwargs)
+
+    if info.options.get('in_transaction', False):
+		    return wrapped
+    else:
+        return task
+```
+
+Celery will accept any keyword arguments passed in, so no configuration is necessary to use your own options.
+All options will be set as attributes on the task object.
+
+## Extending Tasks:  Events
+
+Pyramid Task also fires events using Pyramid's [event system](https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/events.html).
+Currently the only event is `pyramid_task.events.BeforeDeferTask`, which will fire when calling `defer_task` or `defer_task_with_options`.
+The event contains the following attributes:
+
+* `request` — The current request.
+* `task` — The task being deferred.
+* `args` — The arguments being passed to the task.
+* `kwargs` — The keyword arguments being passed to the task.
+* `options` — The options being passed into `Task.apply_async`.
+
+You can modify `options` in-place and the changes will be reflected in the `apply_async` call.
+
+For example, here's an event subscriber that adds the current user ID to the headers.
+
+```python
+def add_headers(event):
+    headers = event.options.setdefault('headers')
+    headers.setdefault('user_id', event.request.authenticated_userid)
+
+def includeme(config):
+    config.add_subscriber(add_headers, BeforeDeferTask)
+```
+
+The user ID will now be accessible from `request.current_task.request.user_id`.
+
 ## Acknowledgements
 
 Pyramid Tasks is heavily inspired by the code of PyPA's [Warehouse](https://github.com/pypa/warehouse/) project.
