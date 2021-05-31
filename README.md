@@ -146,45 +146,6 @@ See the Celery docs for more information.
 `AsyncResult` also has an `id` property.
 If you store this property somewhere, such as a client session, you can use `request.get_task_result(id)` to return a new `AsyncResult` object.
 
-## Tweens
-
-Pyramid has a feature called [tweens](https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/hooks.html#registering-tweens)
-that lets developers add middleware to the request pipeline, which can be used for transaction management, performance monitoring, error handling, and much more.
-Pyramid Task has an analog to this feature called "task tweens."
-
-Task tweens operate in much the same way as tweens.
-A tween factory, given a task function and the application registry, returns a function.
-For example, here's the code used to inject a request as the first argument:
-
-```python
-def request_tween_factory(handler, registry):
-    def tween(*args, **kwargs):
-        with prepare(registry=registry) as env:
-            return handler(env["request"], *args, **kwargs)
-
-    return tween
-```
-
-Register a tween by calling `Configurator.add_task_tween` with a Zope-style dotted name for your factory function.
-
-```python
-config.add_task_tween('myproject.tweens.my_tween_factory')
-```
-
-You can also specify the ordering of task tweens by using `over` and/or `under` arguments, just like Pyramid tweens.
-A tween "over" another tween means it is executed earlier in the pipeline.
-`pyramid_tasks.tweens.REQUEST_TWEEN` is an attribute containing the name of a built-in tween that creates a request object and injects it as the first argument.
-Any tween that depends on a request object should be placed under `REQUEST_TWEEN`.
-
-```python
-config.add_task_tween('myproject.tweens.my_tween_factory')
-config.add_task_tween(
-    'myproject.tweens.another_factory',
-    over='myproject.tweens.my_tween_factory',
-    under=REQUEST_TWEEN,
-)
-```
-
 ## pyramid_tm Integration
 
 [pyramid_tm](https://docs.pylonsproject.org/projects/pyramid-tm/en/latest/) is the recommended way of adding transaction management to Pyramid.
