@@ -44,7 +44,7 @@ class MockDatabase:
         self._store[key] = value
 
 
-def transaction_task_deriver(info, task):
+def transaction_task_deriver(task, info):
     if not info.options.get("in_transaction", False):
         return task
 

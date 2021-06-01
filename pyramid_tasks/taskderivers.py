@@ -54,7 +54,7 @@ def _apply_task_derivers(config, task, name, options):
         original_func=task,
     )
     for name, deriver in reversed(derivers):
-        task = deriver(info, task)
+        task = deriver(task, info)
     return task
 
 
