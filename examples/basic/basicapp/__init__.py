@@ -69,7 +69,7 @@ def total(context, request):
         delay = float(request.GET.get("delay", "0"))
     except ValueError:
         raise HTTPBadRequest("`delay` must be a float.")
-    result = request.delay_task(total_task, delay)
+    result = request.defer_task(total_task, delay)
     return f"{ result.id }\n"
 
 

@@ -30,5 +30,5 @@ def total(context, request):
     Calculate the total.
 
     """
-    result = request.delay_task("total_task").get()
+    result = request.defer_task("total_task").get()
     return f"{ result }\n"

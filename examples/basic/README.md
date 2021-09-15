@@ -77,15 +77,15 @@ def total(context, request):
         delay = float(request.GET.get("delay", "0"))
     except ValueError:
         raise HTTPBadRequest("`delay` must be a float.")
-    result = request.delay_task(total_task, delay)
+    result = request.defer_task(total_task, delay)
     return f"{ result.id }\n"
 ```
 
-You can see we call `request.delay_task`, which puts `total_task` onto the Celery queue.
+You can see we call `request.defer_task`, which puts `total_task` onto the Celery queue.
 The Celery worker will pick this up and run the `total_task` function asynchronously.
 Remember that we registered `total_task` in the configuration, so that Celery is aware of it.
 
-`request.delay_task` returns a [celery.result.AsyncResult](https://docs.celeryproject.org/en/stable/reference/celery.result.html#celery.result.AsyncResult) object.
+`request.defer_task` returns a [celery.result.AsyncResult](https://docs.celeryproject.org/en/stable/reference/celery.result.html#celery.result.AsyncResult) object.
 We return the `id` property to the user so we can reference the task again later.
 
 Let's look at this `total_task` function Celery is running.
@@ -126,7 +126,7 @@ def result(context, request):
 ```
 
 Here we're taking the `id` we returned earlier and passing it into `request.get_task_result`.
-This returns a `celery.result.AsyncResult` object, just like `request.delay_task` did.
+This returns a `celery.result.AsyncResult` object, just like `request.defer_task` did.
 We take the `AsyncResult` and make sure the task has completed (`result.ready()`).
 If it has, we return the task's output (`result.result`).
 
