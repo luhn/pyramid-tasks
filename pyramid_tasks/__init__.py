@@ -5,7 +5,7 @@ from pyramid.scripting import prepare
 
 from .events import BeforeDeferTask
 from .settings import extract_celery_settings
-from .taskderivers import _apply_task_derivers
+from .taskderivers import apply_task_derivers
 
 # If set, pyramid_tasks will use this Celery application rather than make a new
 # one.  This is necessary because when running a worker via an ini file (see
@@ -69,7 +69,7 @@ def register_task(config, func, name=None, **kwargs):
     name = name or app.gen_task_name(func.__name__, func.__module__)
 
     def register():
-        derived = _apply_task_derivers(config, func, name, kwargs)
+        derived = apply_task_derivers(config, func, name, kwargs)
         handler = _make_task_handler(config.registry, derived)
         task = app.task(
             handler,

@@ -40,7 +40,7 @@ def add_task_deriver(config, deriver, name=None, under=None, over=None):
     config.action(discriminator, add, order=PHASE0_CONFIG)
 
 
-def _apply_task_derivers(config, task, name, options):
+def apply_task_derivers(config, task, name, options):
     """
     Apply the task derivers to a task.
 
