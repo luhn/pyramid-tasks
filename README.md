@@ -255,7 +255,7 @@ For example, here's an event subscriber that adds the current user ID to the hea
 
 ```python
 def add_headers(event):
-    headers = event.options.setdefault('headers')
+    headers = event.options.setdefault('headers', {})
     headers.setdefault('user_id', event.request.authenticated_userid)
 
 def includeme(config):
