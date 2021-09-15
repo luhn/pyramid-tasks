@@ -4,7 +4,7 @@ This app stores an append-only ledger and totals the ledger values in a task.
 
 ## A Tour of the Code
 
-The bulk of the functionality is located at [sampleapp/__init__.py](sampleapp/__init__.py).
+The bulk of the functionality is located at `sampleapp/__init__.py`.
 Here's a quick overview of the functions in the file:
 
 - `configure` — Create the Pyramid app.
@@ -178,7 +178,36 @@ REDIS_URL=redis://host:123 celery -A sampleapp worker -l INFO
 
 ### Paste/pserve
 
-TODO
+You can also configure Pyramid and Celery using Paste-style ini files.
+Here's our `config.ini`:
+
+```ini
+[app:main]
+use = egg:basicapp
+
+redis.url = redis://
+celery.broker_url = redis://
+celery.result_backend = redis://
+
+[server:main]
+use = egg:waitress#main
+port = 8000
+```
+
+As you can see, it's just a regular Pyramid ini file.
+We configure Celery with two properties:  `celery.broker_url` and `celery.result_backend`
+
+You can run the app using `pserve`:
+
+```sh
+pserve config.ini
+```
+
+And run Celery:
+
+```sh
+celery -A pyramid_tasks worker -l INFO --ini config.ini
+```
 
 ## Using
 
