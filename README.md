@@ -47,7 +47,7 @@ broker_transport_options = {
 result_backend = 'redis://'
 ```
 
-Would be translated into the following .ini file:
+Is equivalent to the following .ini file:
 
 ```ini
 celery.broker_url = redis://
