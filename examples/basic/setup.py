@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 REQUIRES = [
     'celery[redis]~=4.4',
     'pyramid-tasks~=0.2',
-    'pyramid~1.10',
+    'pyramid~=1.10',
     'redis~=3.5',
     'waitress~=1.4',
 ]
