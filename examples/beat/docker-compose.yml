@@ -2,14 +2,14 @@
 services:
   celery:
     build: .
-    command: ["celery", "-A", "basicapp", "worker", "-l", "INFO"]
+    command: ["celery", "-A", "beatapp", "worker", "-l", "INFO"]
     environment:
       - REDIS_URL=redis://redis
     links:
       - redis
   beat:
     build: .
-    command: ["celery", "-A", "basicapp", "beat", "-l", "INFO"]
+    command: ["celery", "-A", "beatapp", "beat", "-l", "INFO"]
     environment:
       - REDIS_URL=redis://redis
     links:
