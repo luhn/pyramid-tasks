@@ -139,7 +139,7 @@ def add_view(context, request):
 
 ## Getting Task Results
 
-`request.defer_task` returns a Celery [AsyncResult](https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.AsyncResult) object.
+`request.defer_task` returns a Celery [AsyncResult](https://docs.celeryproject.org/en/stable/_modules/celery/result.html#AsyncResult) object.
 You can use this object to check if the task has completed (`AsyncResult.ready()`) and to get the return value of the task (`AsyncResult.result`).
 See the Celery docs for more information.
 
