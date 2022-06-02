@@ -3,6 +3,7 @@ import os
 import zope.sqlalchemy
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
+from pyramid_tasks.events import CeleryWorkerProcessInit
 
 from .ledger import Ledger
 from .meta import Base
@@ -57,4 +58,8 @@ def includeme(config):
         lambda request: get_tm_session(session_factory, request.tm),
         "db",
         reify=True,
+    )
+    config.add_subscriber(
+        lambda _: dbengine.pool.recreate(),
+        CeleryWorkerProcessInit,
     )

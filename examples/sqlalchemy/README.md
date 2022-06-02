@@ -60,3 +60,15 @@ config.include("pyramid_tasks.transaction")
 ```
 
 That's all.  One extra line and you have working transactions in your tasks.
+
+However, there's one important final detail.
+Celery uses a prefork worker model, which [may cause problems with SQLAlchemy](https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork).
+To remedy this, we need to make sure to dispose of any connections when initializing a worker.
+This can be done by subscribing to the `pyramid_tasks.events.CeleryWorkerProcessInit` event, as seen in `sqlalchemyapp/models/__init__.py`:
+
+```python
+config.add_subscriber(
+		lambda _: dbengine.pool.recreate(),
+		CeleryWorkerProcessInit,
+)
+```
