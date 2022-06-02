@@ -4,7 +4,7 @@ This app stores an append-only ledger and totals the ledger values in a task.
 
 ## A Tour of the Code
 
-The bulk of the functionality is located at `sampleapp/__init__.py`.
+The bulk of the functionality is located at `basicapp/__init__.py`.
 Here's a quick overview of the functions in the file:
 
 - `configure` — Create the Pyramid app.
@@ -132,12 +132,12 @@ If it has, we return the task's output (`result.result`).
 
 There we have it.  A fully functional Pyramid application with a Celery worker.
 
-There are a couple other files in the `sampleapp` package that I'll briefly touch on.
+There are a couple other files in the `basicapp` package that I'll briefly touch on.
 
-`sampleapp/__main__.py` boots a simple WSGI server on port 8000.
+`basicapp/__main__.py` boots a simple WSGI server on port 8000.
 
-`sampleapp/celery.py` runs `app = configure().make_celery_app()`, which sets `app` to the Celery application created by Pyramid Tasks.
-When you run `celery -A sampleapp worker`, Celery will find `app` and use it in the worker.
+`basicapp/celery.py` runs `app = configure().make_celery_app()`, which sets `app` to the Celery application created by Pyramid Tasks.
+When you run `celery -A basicapp worker`, Celery will find `app` and use it in the worker.
 
 If you're using `pserve` to run your application, these two files are not required.
 
@@ -153,27 +153,27 @@ This sample app requires Redis, so install and run Redis on your machine.
 First, install the app and its dependencies:
 
 ```sh
-pip install .
+pip install -e .
 ```
 
 Run the app:
 
 ```sh
-python -m sampleapp
+python -m basicapp
 ```
 
 In a different terminal, run the Celery worker:
 
 ```sh
-celery -A sampleapp worker -l INFO
+celery -A basicapp worker -l INFO
 ```
 
 By default, the app will look for Redis on localhost port 6379.
 To point it elsewhere, set the `REDIS_URL` environment variable when running the app and the worker.
 
 ```sh
-REDIS_URL=redis://host:123 python -m sampleapp
-REDIS_URL=redis://host:123 celery -A sampleapp worker -l INFO
+REDIS_URL=redis://host:123 python -m basicapp
+REDIS_URL=redis://host:123 celery -A basicapp worker -l INFO
 ```
 
 ### Paste/pserve
