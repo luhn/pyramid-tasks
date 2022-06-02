@@ -2,14 +2,14 @@ from setuptools import setup, find_packages
 
 
 REQUIRES = [
-    'celery[redis]~=4.4',
-    'pyramid-tasks~=0.2.0',
-    'pyramid~=1.10',
-    'pyramid_tm~=2.4',
-    'redis~=3.5',
-    'SQLAlchemy~=1.3.22',
-    'waitress~=1.4',
-    'zope.sqlalchemy~=1.3',
+    'celery[redis]~=5.2',
+    'pyramid-tasks~=0.3.0',
+    'pyramid~=2.0',
+    'pyramid_tm~=2.5',
+    'redis~=4.3',
+    'SQLAlchemy~=1.4',
+    'waitress~=2.1',
+    'zope.sqlalchemy~=1.6',
 ]
 
 

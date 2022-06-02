@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 
 REQUIRES = [
-    'celery[redis]~=4.4',
-    'pyramid-tasks~=0.2',
-    'pyramid~=1.10',
-    'redis~=3.5',
-    'waitress~=1.4',
+    'celery[redis]~=5.2',
+    'pyramid-tasks~=0.3',
+    'pyramid~=2.0',
+    'redis~=4.3',
+    'waitress~=2.1',
 ]
 
 
