@@ -264,6 +264,22 @@ def includeme(config):
 
 The user ID will now be accessible from `request.current_task.request.user_id`.
 
+## Fork Safety
+
+Celery by default uses a pre-fork worker model,
+meaning the application will be initialized and then forked to launch the desired number of workers.
+This can cause issues with some libraries, especially ones utilizing file descriptors such as database connections.
+For example, [SQLAlchemy requires disposing connections on fork](https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork).
+You can do this by subscribing to the `pyramid_task.events.CeleryWorkerProcessInit` event.
+
+``python
+config.add_subscriber(lambda _: engine.pool.recreate(), CeleryWorkerProcessInit)
+```
+
+The event includes the current [application registry](https://docs.pylonsproject.org/projects/pyramid/en/2.0-branch/api/registry.html) in the `registry` property.
+
+`CeleryWorkerProcessInit` is triggered by Celery's `worker_process_init` signal, so use it in the same situations you would that signal.
+
 ## Acknowledgements
 
 Pyramid Tasks is heavily inspired by the code of PyPA's [Warehouse](https://github.com/pypa/warehouse/) project.
