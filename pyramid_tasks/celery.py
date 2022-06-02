@@ -40,4 +40,5 @@ def on_preload_parsed(options, **kwargs):
 
     set_global_app(celery)
     # We don't do anything with this, just want to trigger configuration.
+    print(ini_location)
     get_app(ini_location, options=options)

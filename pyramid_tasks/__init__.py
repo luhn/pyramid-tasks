@@ -3,7 +3,7 @@ import venusian
 from pyramid.interfaces import PHASE1_CONFIG, PHASE2_CONFIG, PHASE3_CONFIG
 from pyramid.scripting import prepare
 
-from .events import BeforeDeferTask
+from .events import BeforeDeferTask, CeleryWorkerProcessInit
 from .settings import extract_celery_settings
 from .taskderivers import apply_task_derivers
 
@@ -28,6 +28,7 @@ def includeme(config):
         )
     else:
         app = global_app
+    _connect_worker_process_init(config.registry)
     app.conf.update(extract_celery_settings(settings))
     app.pyramid_config = config
     config.registry["pyramid_tasks.app"] = app
@@ -201,3 +202,16 @@ def current_task(request):
 
     """
     return _get_app(request.registry).current_worker_task
+
+
+def _connect_worker_process_init(registry):
+    """
+    Connect a signal handler to Celery's ``worker_process_init`` module.
+
+    """
+
+    def handler(sender=None, **kwargs):
+        registry.notify(CeleryWorkerProcessInit(registry))
+
+    signal = celery.signals.worker_process_init
+    signal.connect(handler, weak=False)
