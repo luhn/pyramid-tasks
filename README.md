@@ -272,7 +272,7 @@ This can cause issues with some libraries, especially ones utilizing file descri
 For example, [SQLAlchemy requires disposing connections on fork](https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork).
 You can do this by subscribing to the `pyramid_task.events.CeleryWorkerProcessInit` event.
 
-``python
+```python
 config.add_subscriber(lambda _: engine.pool.recreate(), CeleryWorkerProcessInit)
 ```
 
