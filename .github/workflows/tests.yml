@@ -8,12 +8,13 @@ jobs:
     strategy:
       matrix:
         py:
-          - "3.6"
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
-          - "pypy3"
+          - "3.11"
+          - "3.12"
+          - "pypy3.9"
+          - "pypy3.10"
         pyramid_version:
           - "<2"
           - ">=2"
@@ -21,9 +22,9 @@ jobs:
     name: "Python: ${{ matrix.py }}, Pyramid: ${{ matrix.pyramid_version }}"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.py }}
       - name: Install
@@ -35,9 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Lint
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
       - name: Install
