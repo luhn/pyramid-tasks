@@ -29,7 +29,7 @@ def on_preload_parsed(options, **kwargs):
     ini_location = options["ini"]
     ini_vars = options["ini_var"]
     if ini_location is None:
-        print("You must provide the --ini argument")
+        print("You must provide the --ini argument")  # noqa: T201
         exit(-1)
 
     options = {}
@@ -40,5 +40,4 @@ def on_preload_parsed(options, **kwargs):
 
     set_global_app(celery)
     # We don't do anything with this, just want to trigger configuration.
-    print(ini_location)
     get_app(ini_location, options=options)

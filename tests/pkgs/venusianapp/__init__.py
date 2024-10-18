@@ -2,6 +2,7 @@
 Test adding a task via venusian.
 
 """
+
 from pyramid_tasks import task
 
 

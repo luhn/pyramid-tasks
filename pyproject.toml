@@ -5,12 +5,14 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[tool.black]
+[tool.ruff]
 line-length = 79
+target-version = "py38"
 
-[tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-line_length = 79
+[tool.ruff.lint]
+select = [
+	"E",  # flake8
+	"F",  # pyflakes
+	"T20",  # flake8-print
+	"I",   # isort
+]

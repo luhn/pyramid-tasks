@@ -40,12 +40,10 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.12
       - name: Install
         run: pip install .[linting]
-      - name: Flake8
-        run: flake8 pyramid_tasks tests
-      - name: Black
-        run: black --check pyramid_tasks tests
-      - name: isort
-        run: isort --check pyramid_tasks tests
+      - name: Lint
+        run: ruff check pyramid_tasks tests
+      - name: Format
+        run: ruff format --check pyramid_tasks tests
