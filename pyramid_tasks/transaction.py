@@ -10,7 +10,14 @@ def includeme(config):
 
 def transaction_task_deriver(task, info):
     def deriver(request, *args, **kwargs):
-        with request.tm:
+        if request.environ.get('tm.active'):
+            return task(request, *args, **kwargs)
+
+        manager = request.tm
+        environ['tm.active'] = True
+        environ['tm.manager'] = manager
+
+        with manager:
             return task(request, *args, **kwargs)
 
     return deriver
