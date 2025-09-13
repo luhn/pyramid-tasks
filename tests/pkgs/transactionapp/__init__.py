@@ -10,7 +10,7 @@ def includeme(config):
         }
     )
     config.include("pyramid_tm")
-    config.include("pyramid_tasks.transaction")
+    config.include("pyramid_tasks.contrib.pyramid_tm")
 
     config.add_settings({"sqlalchemy.url": "sqlite:///db.sqlite3"})
     dbengine = get_engine(config.get_settings())

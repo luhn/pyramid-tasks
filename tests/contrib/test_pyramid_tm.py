@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from pyramid.testing import DummyRequest
 
-from pyramid_tasks.transaction import transaction_task_deriver
+from pyramid_tasks.contrib.pyramid_tm import transaction_task_deriver
 
 
 class TestTransactionTastDeriver:
