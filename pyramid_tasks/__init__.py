@@ -1,9 +1,13 @@
 import celery
 import venusian
-from pyramid.interfaces import PHASE1_CONFIG, PHASE2_CONFIG, PHASE3_CONFIG
-from pyramid.scripting import prepare
+from pyramid.interfaces import (
+    PHASE1_CONFIG,
+    PHASE2_CONFIG,
+    PHASE3_CONFIG,
+    IRequestFactory,
+)
 from pyramid.request import Request
-from pyramid.interfaces import IRequestFactory
+from pyramid.scripting import prepare
 
 from .events import BeforeDeferTask, CeleryWorkerProcessInit
 from .settings import extract_celery_settings
@@ -95,9 +99,9 @@ def _make_task_handler(registry, func):
     """
 
     def handler(self, *args, **kwargs):
-        environ = self.request.headers.get('environ')
+        environ = self.request.headers.get("environ")
         request = _make_request(registry, environ)
-        with prepare(request=request, registry=registry) as env:
+        with prepare(request=request, registry=registry):
             return func(request, *args, **kwargs)
 
     return handler
@@ -105,7 +109,7 @@ def _make_task_handler(registry, func):
 
 def _make_request(registry, environ):
     request_factory = registry.queryUtility(IRequestFactory, default=Request)
-    request = request_factory.blank('/', environ=environ)
+    request = request_factory.blank("/", environ=environ)
     return request
 
 
