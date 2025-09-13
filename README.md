@@ -153,7 +153,7 @@ For example, the [Pyramid cookiecutter](https://github.com/Pylons/pyramid-cookie
 uses `pyramid_tm` and `zope.sqlalchemy` to integrate SQLAlchemy into Pyramid.
 
 Pyramid Tasks includes built-in support for pyramid_tm.
-It can be enabled by including `pyramid_tasks.transaction` in your project.
+It can be enabled by including `pyramid_tasks.contrib.pyramid_tm` in your project.
 This must be included after Pyramid Tasks, but doesn't need to be included before pyramid_tm.
 
 To see Pyramid Tasks, pyramid_tm, and SQLAlchemy in action, check out the [SQLAlchemy sample app](https://github.com/luhn/pyramid-tasks/tree/main/examples/sqlalchemy).
