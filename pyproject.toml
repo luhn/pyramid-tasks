@@ -15,4 +15,5 @@ select = [
 	"F",  # pyflakes
 	"T20",  # flake8-print
 	"I",   # isort
+	"RUF",  # Ruff-specific
 ]
