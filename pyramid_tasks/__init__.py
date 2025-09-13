@@ -99,7 +99,8 @@ def _make_task_handler(registry, func):
     """
 
     def handler(self, *args, **kwargs):
-        environ = self.request.headers.get("environ")
+        headers = self.request.headers
+        environ = headers.get("environ") if headers else None
         request = _make_request(registry, environ)
         with prepare(request=request, registry=registry):
             return func(request, *args, **kwargs)
