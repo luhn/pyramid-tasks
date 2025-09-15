@@ -1,9 +1,61 @@
 [build-system]
-requires = [
-  "setuptools >= 40.9.0",
-  "wheel",
-]
+requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyramid-tasks"
+version = "0.3.2"
+authors = [
+{name = "Theron Luhn", email = "theron@luhn.com"},
+]
+description = "Bring parity to Pyramid and Celery by creating a full Pyramid application in the Celery worker and providing a request object for each task."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+	"Development Status :: 4 - Beta",
+	"Framework :: Pyramid",
+	"Intended Audience :: Developers",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python :: 3 :: Only",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
+	"Programming Language :: Python :: Implementation :: CPython",
+	"Programming Language :: Python :: Implementation :: PyPy",
+	"Programming Language :: Python",
+	"Topic :: Software Development :: Object Brokering",
+]
+
+requires-python = ">= 3.9"
+dependencies = [
+	"celery>=4,<6",
+	"pyramid>=1.9",
+	"venusian>=1.0",
+	"zope.interface>=3.8.0",
+]
+
+[project.optional-dependencies]
+testing = [
+	"pyramid-tm~=2.4",
+	"pytest~=8.3",
+	"sqlalchemy~=2.0",
+	"transaction~=5.0",
+	"zope.sqlalchemy~=3.1",
+]
+linting = [
+	"ruff~=0.13.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/luhn/pyramid-tasks/"
+Documentation = "https://github.com/luhn/pyramid-tasks/"
+Repository = "https://github.com/luhn/pyramid-tasks/"
+Issues = "https://github.com/luhn/pyramid-tasks/issues"
+Changelog = "https://github.com/luhn/pyramid-tasks/releases"
 
 [tool.ruff]
 line-length = 79
