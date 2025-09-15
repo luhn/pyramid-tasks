@@ -15,6 +15,7 @@ license-files = ["LICENSE"]
 classifiers = [
 	"Development Status :: 4 - Beta",
 	"Framework :: Pyramid",
+	"Framework :: Celery",
 	"Intended Audience :: Developers",
 	"Operating System :: OS Independent",
 	"Programming Language :: Python :: 3 :: Only",
@@ -27,7 +28,6 @@ classifiers = [
 	"Programming Language :: Python :: Implementation :: CPython",
 	"Programming Language :: Python :: Implementation :: PyPy",
 	"Programming Language :: Python",
-	"Topic :: Software Development :: Object Brokering",
 ]
 
 requires-python = ">= 3.9"
