@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 name = "pyramid-tasks"
 version = "0.3.2"
 authors = [
-  {name = "Theron Luhn", email = "theron@luhn.com"},
+{name = "Theron Luhn", email = "theron@luhn.com"},
 ]
 description = "Bring parity to Pyramid and Celery by creating a full Pyramid application in the Celery worker and providing a request object for each task."
 readme = "README.md"
