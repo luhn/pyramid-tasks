@@ -19,7 +19,6 @@ classifiers = [
 	"Operating System :: OS Independent",
 	"Programming Language :: Python :: 3 :: Only",
 	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.8",
 	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
 	"Programming Language :: Python :: 3.11",
@@ -31,7 +30,7 @@ classifiers = [
 	"Topic :: Software Development :: Object Brokering",
 ]
 
-requires-python = ">= 3.8"
+requires-python = ">= 3.9"
 dependencies = [
 	"celery>=4,<6",
 	"pyramid>=1.9",
