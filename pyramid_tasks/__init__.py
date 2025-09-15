@@ -1,6 +1,12 @@
 import celery
 import venusian
-from pyramid.interfaces import PHASE1_CONFIG, PHASE2_CONFIG, PHASE3_CONFIG
+from pyramid.interfaces import (
+    PHASE1_CONFIG,
+    PHASE2_CONFIG,
+    PHASE3_CONFIG,
+    IRequestFactory,
+)
+from pyramid.request import Request
 from pyramid.scripting import prepare
 
 from .events import BeforeDeferTask, CeleryWorkerProcessInit
@@ -76,6 +82,7 @@ def register_task(config, func, name=None, **kwargs):
             handler,
             name=name,
             shared=False,
+            bind=True,
             **kwargs,
         )
         config.registry["pyramid_tasks.task_map"][func] = task
@@ -91,11 +98,20 @@ def _make_task_handler(registry, func):
 
     """
 
-    def handler(*args, **kwargs):
-        with prepare(registry=registry) as env:
-            return func(env["request"], *args, **kwargs)
+    def handler(self, *args, **kwargs):
+        headers = self.request.headers
+        environ = headers.get("environ") if headers else None
+        request = _make_request(registry, environ)
+        with prepare(request=request, registry=registry):
+            return func(request, *args, **kwargs)
 
     return handler
+
+
+def _make_request(registry, environ):
+    request_factory = registry.queryUtility(IRequestFactory, default=Request)
+    request = request_factory.blank("/", environ=environ)
+    return request
 
 
 def task(**kwargs):

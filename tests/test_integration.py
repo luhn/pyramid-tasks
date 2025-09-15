@@ -64,8 +64,8 @@ def test_options_integration(test_config):
     with make_request_with_worker(test_config) as request:
         result = request.defer_task_with_options(
             "test", headers={"foo": "bar"}
-        )
-        result.get() == "bar"
+        ).get()
+    assert result == "bar"
 
 
 def test_legacy_integration(test_config):
@@ -79,8 +79,8 @@ def test_legacy_integration(test_config):
 
     test_config.register_task(add_task, name="add")
     with make_request_with_worker(test_config) as request:
-        result = request.delay_task("add", 2, 3)
-    assert result.get() == 5
+        result = request.delay_task("add", 2, 3).get()
+    assert result == 5
 
 
 def test_task_by_function_integration(test_config):
@@ -89,15 +89,15 @@ def test_task_by_function_integration(test_config):
 
     test_config.register_task(add_task, name="add")
     with make_request_with_worker(test_config) as request:
-        result = request.defer_task(add_task, 2, 3)
-    assert result.get() == 5
+        result = request.defer_task(add_task, 2, 3).get()
+    assert result == 5
 
 
 def test_task_venusian_integration(test_config):
     test_config.include("tests.pkgs.venusianapp")
     with make_request_with_worker(test_config) as request:
-        result = request.defer_task("venusian_add_task", 2, 3)
-    assert result.get() == 5
+        result = request.defer_task("venusian_add_task", 2, 3).get()
+    assert result == 5
 
 
 def test_get_task_result_integration(test_config):
@@ -130,6 +130,20 @@ def test_task_deriver_integration(test_config):
 
     with make_request_with_worker(test_config) as request:
         assert request.defer_task("increment", 4).get() == 7
+
+
+def test_task_environ_integration(test_config):
+    def add_task(request):
+        return request.environ["foo"]
+
+    test_config.register_task(add_task, name="add")
+    environ = {"foo": "bar"}
+    with make_request_with_worker(test_config) as request:
+        result = request.defer_task_with_options(
+            "add",
+            headers={"environ": environ},
+        ).get()
+    assert result == "bar"
 
 
 def test_transaction_integration(test_config):

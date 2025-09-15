@@ -264,6 +264,22 @@ def includeme(config):
 
 The user ID will now be accessible from `request.current_task.request.user_id`.
 
+## Extending Tasks:  Environment
+
+You can pass in `environ` as a dictionary to the headers, which will populate `environ` in the task request object.
+If desired, these can be added to every call via the `BeforeDeferTask` argument.
+This can be particularly useful for integration testing,
+where information about the test environment may need to be passed to the request.
+
+```python
+def mytask(request):
+    print(request.environ["foo"])
+
+def invoke(request):
+    environ = {"foo": "bar"}
+    request.defer_task_with_options(mytask, headers={'environ': environ})
+```
+
 ## Fork Safety
 
 Celery by default uses a pre-fork worker model,
