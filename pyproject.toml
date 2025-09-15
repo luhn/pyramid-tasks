@@ -10,6 +10,8 @@ authors = [
 ]
 description = "Bring parity to Pyramid and Celery by creating a full Pyramid application in the Celery worker and providing a request object for each task."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 classifiers = [
 	"Development Status :: 4 - Beta",
 	"Framework :: Pyramid",
